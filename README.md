@@ -14,7 +14,7 @@ Powered by
 ## 📷 Screenshots
 
 Main page
-![screenshot](public/main.png)
+![screenshot](public/main-1.png)
 
 Movies result
 ![screenshot](public/movies.png)
@@ -23,7 +23,7 @@ Loading component
 ![screenshot](public/loading.png)
 
 ## 🎥 Demo Video
-
+https://www.loom.com/share/6d8256ae04034b8488309c55c29e46b5?sid=ae1a4b2e-b4fb-4390-9906-a476a46d9131
 
 ## 🚀 Tech Stack
 

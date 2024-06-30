@@ -1,6 +1,7 @@
 "use client";
 
 import { ChangeEvent, useState } from "react";
+import { MagnifyingGlassIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import "atropos/css";
 
 import { MovieCard } from "@/components";
@@ -8,9 +9,10 @@ import { searchByQuery } from "@/api-service";
 import { Movie } from "@/components/types";
 import { WeaviateReturn } from "weaviate-client";
 import { SkeletonGrid } from "@/components/MovieSkeleton";
+import { QUERY_EXAMPLES } from "@/constants/examples";
 
 const ComingSoon = () => (
-  <span className="text-gray-300 text-sm p-1 rounded-sm bg-gray-700 w-[120px] text-center">
+  <span className="text-gray-300 text-xs p-1 rounded-sm bg-gray-700 w-[120px] text-center">
     Coming soon
   </span>
 );
@@ -28,9 +30,9 @@ export default function Home() {
     }
   };
 
-  const handleSearchByText = async () => {
+  const handleSearchByText = async (query_: string) => {
     setLoading(true);
-    const results = (await searchByQuery(query)) as WeaviateReturn<undefined>;
+    const results = (await searchByQuery(query_)) as WeaviateReturn<undefined>;
     setResults(
       results.objects.map((res) => {
         const properties = res?.properties as any;
@@ -93,11 +95,37 @@ export default function Home() {
 
               <button
                 className="px-4 py-2 text-white bg-blue-500 rounded-lg"
-                onClick={handleSearchByText}
+                onClick={() => handleSearchByText(query)}
                 disabled={!query.length || loading}
               >
-                Search
+                <MagnifyingGlassIcon className="w-6 h-6" />
               </button>
+              <button
+                className="px-4 py-2 text-white bg-red-500 rounded-lg"
+                onClick={() => {
+                  setQuery("");
+                  setResults([]);
+                }}
+                disabled={!query.length || loading}
+              >
+                <XCircleIcon className="w-6 h-6" />
+              </button>
+            </div>
+            <div>
+              <p>Try these:</p>
+              {QUERY_EXAMPLES.map((example) => (
+                <div
+                  key={example.id}
+                  onClick={() => {
+                    setQuery(example.query);
+                    handleSearchByText(example.query);
+                  }}
+                >
+                  <span className="text-blue-500 cursor-pointer">
+                    {example.query}
+                  </span>
+                </div>
+              ))}
             </div>
           </form>
 
@@ -123,7 +151,7 @@ export default function Home() {
                 className="px-4 py-2 text-white bg-blue-500 rounded-lg"
                 disabled
               >
-                Search
+                <MagnifyingGlassIcon className="w-6 h-6" />
               </button>
             </div>
           </form>

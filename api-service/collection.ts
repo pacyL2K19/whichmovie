@@ -2,7 +2,7 @@
 
 import { vectorizer } from "weaviate-client";
 import { getClient } from ".";
-import { randomUUID } from "crypto";
+import { DEFAULT_COLLECTION_NAME, DEFAULT_MODEL, DEFAULT_RETURN_LIMIT, DEFAULT_SOURCE_PROPERTIES, VECTORIZER_NAME } from "@/constants";
 
 export const createCollection = async (collectionName: string) => {
   try {
@@ -11,9 +11,9 @@ export const createCollection = async (collectionName: string) => {
       name: collectionName,
       vectorizers: [
         vectorizer.text2VecHuggingFace({
-          name: "hf_vectorizer",
-          sourceProperties: ["description", "title", "genre"],
-          model: "sentence-transformers/all-MiniLM-L6-v2",
+          name: VECTORIZER_NAME,
+          sourceProperties: DEFAULT_SOURCE_PROPERTIES as any,
+          model: DEFAULT_MODEL,
           waitForModel: true,
           useCache: true,
         }),
@@ -79,13 +79,13 @@ export const seedCollection = async (
 
 export const searchByQuery = async (
   query: string,
-  collectionName = "Movie"
+  collectionName = DEFAULT_COLLECTION_NAME
 ) => {
   try {
     const client = await getClient();
     const collection = client.collections.get(collectionName);
     const response = await collection.query.hybrid(query, {
-      limit: 4,
+      limit: DEFAULT_RETURN_LIMIT,
     });
 
     return response;
