@@ -1,9 +1,10 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import "atropos/css";
 import { dummyMovies } from "@/utils";
 import { MovieCard } from "@/components";
+import { collectionExists, createCollection } from "@/api-service";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
@@ -15,6 +16,18 @@ export default function Home() {
   };
 
   const handleSearchByText = () => {};
+
+  useEffect(() => {
+    (async () => {
+      const movieCollectionExists = await collectionExists("Movie");
+      if (!movieCollectionExists) {
+        createCollection();
+        // feed collection later
+      } else {
+        console.log("collection exists");
+      }
+    })();
+  }, []);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
