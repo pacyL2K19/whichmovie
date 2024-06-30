@@ -74,18 +74,23 @@ export const seedCollection = async (
   const client = await getClient();
   const collection = client.collections.get(collectionName);
 
-  const dataObjects = data.map((movie) => ({
-    properties: movie,
-    id: randomUUID(),
-  }));
+  const res = await collection.data.insertMany(data);
+};
 
-  const response = await collection.data.insertMany(data);
+export const searchByQuery = async (
+  query: string,
+  collectionName = "Movie"
+) => {
+  try {
+    const client = await getClient();
+    const collection = client.collections.get(collectionName);
+    const response = await collection.query.hybrid(query, {
+      limit: 4,
+    });
 
-  console.log("Sample movie inserted: ", response);
-  // for (const movie of data) {
-  //   await collection.data.insert({
-  //     properties: movie,
-  //     vector: "text2vec-openai",
-  //   });
-  // }
+    return response;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 };

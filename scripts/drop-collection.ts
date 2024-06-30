@@ -1,9 +1,10 @@
 import readline from "readline";
-import { setEnviromentsFromArgs } from "./common";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { DEFAULT_SECRET_COMMAND_LINE_OPTIONS } from "./common/constants";
+
 import { deleteCollection } from "@/api-service/collection";
+import { setEnviromentsFromArgs } from "./common";
+import { DEFAULT_SECRET_COMMAND_LINE_OPTIONS } from "./common/constants";
 import { EraseCommandLineOptions } from "./types";
 
 const promptUser = async () => {

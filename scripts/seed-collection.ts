@@ -1,8 +1,9 @@
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+
 import { DEFAULT_SECRET_COMMAND_LINE_OPTIONS } from "./common/constants";
 import { seedCollection } from "@/api-service/collection";
-import { dumbMovies } from "@/data/dumb";
+import { movies } from "@/data/dumb";
 import { SeedCollectionCommandOptions } from "./types";
 import { setEnviromentsFromArgs } from "./common";
 
@@ -14,7 +15,7 @@ async function main() {
   const { hfAPIKey, wcdUrl, wcdApiKey, collectionName } = argv;
   // inject the required env variables for the client
   setEnviromentsFromArgs({ hfAPIKey, wcdUrl, wcdApiKey });
-  seedCollection(collectionName, dumbMovies)
+  seedCollection(collectionName, movies)
     .then(() => console.log(`Seeded collection: ${collectionName}`))
     .catch((error) => console.error(error));
 }

@@ -1,13 +1,26 @@
 "use client";
 
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import "atropos/css";
-import { dummyMovies } from "@/utils";
+
 import { MovieCard } from "@/components";
-import { collectionExists, createCollection } from "@/api-service";
+import { searchByQuery } from "@/api-service";
+import { Movie } from "@/components/types";
+import { WeaviateReturn } from "weaviate-client";
+import { SkeletonGrid } from "@/components/MovieSkeleton";
+
+const ComingSoon = () => (
+  <span className="text-gray-300 text-sm p-1 rounded-sm bg-gray-700 w-[120px] text-center">
+    Coming soon
+  </span>
+);
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+
   const handleFileSelection = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -15,19 +28,23 @@ export default function Home() {
     }
   };
 
-  const handleSearchByText = () => {};
+  const handleSearchByText = async () => {
+    setLoading(true);
+    const results = (await searchByQuery(query)) as WeaviateReturn<undefined>;
+    setResults(
+      results.objects.map((res) => {
+        const properties = res?.properties as any;
+        return {
+          id: res.uuid,
+          title: properties?.title,
+          description: properties?.description,
+          image: properties?.url,
+        };
+      })
+    );
 
-  useEffect(() => {
-    (async () => {
-      const movieCollectionExists = await collectionExists("Movie");
-      if (!movieCollectionExists) {
-        createCollection();
-        // feed collection later
-      } else {
-        console.log("collection exists");
-      }
-    })();
-  }, []);
+    setLoading(false);
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -42,10 +59,13 @@ export default function Home() {
           watch it but don&apos;t know the exact title, only a few details? We
           got you covered.
         </p>
-        <p>
-          <span>?:</span> Do you have a screenshot took from a youtube short and
-          want to know the title of the movie? You are in the right place.
-        </p>
+        <div>
+          <p>
+            <span>?:</span> Do you have a screenshot took from a youtube short
+            and want to know the title of the movie? You are in the right place.{" "}
+            <ComingSoon />
+          </p>
+        </div>
       </section>
 
       <section className="my-8">
@@ -67,11 +87,14 @@ export default function Home() {
                 type="text"
                 placeholder="Enter text here"
                 className="p-2 text-black border-2 rounded-lg w-full"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
               />
 
               <button
                 className="px-4 py-2 text-white bg-blue-500 rounded-lg"
                 onClick={handleSearchByText}
+                disabled={!query.length || loading}
               >
                 Search
               </button>
@@ -82,7 +105,9 @@ export default function Home() {
             onSubmit={(e) => e.preventDefault()}
             className="flex flex-col items-center justify-between w-full space-y-4 lg:w-1/2 lg:items-start lg:space-y-8"
           >
-            <h3>Search by image</h3>
+            <h3>
+              Search by image <ComingSoon />
+            </h3>
             <p className="text-gray-400 text-sm">
               Upload an image or paste the URL of the image and we will find the
               movie or TV show for you.
@@ -107,23 +132,26 @@ export default function Home() {
 
       <section className="z-10 w-full max-w-5xl justify-between font-mono text-sm flex flex-col gap-8">
         <h2>Matching results</h2>
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {dummyMovies.map((movie) => (
-            <MovieCard key={movie.id} {...movie} />
-          ))}
-        </div>
+        {!loading && results.length > 0 && (
+          <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 lg:grid-cols-3 justify-items-center w-full">
+            {results.map((movie) => (
+              <MovieCard key={movie.id} {...movie} />
+            ))}
+          </div>
+        )}
+        {loading && <SkeletonGrid />}
       </section>
 
       <section className="z-10 w-full max-w-5xl justify-between font-mono text-sm flex flex-col gap-8 my-8">
         <h2>How it works?</h2>
         <p>
           <span>{">"}</span> We use the power of <span>Weaviate</span>&apos;s
-          vector database to find the best match for the image or text you
-          provide.
+          vector database to find the best match for the text query you provide.
         </p>
         <p>
           <span>{">"}</span> We use the power of AI to find the best match for
           the image or text you provide.
+          <ComingSoon />
         </p>
       </section>
 
