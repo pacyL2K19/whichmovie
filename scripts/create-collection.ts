@@ -22,10 +22,16 @@ const argv = yargs(hideBin(process.argv))
   .parseSync() as CreateCollectionCommandLineOptions;
 
 async function main() {
-  const { collectionName, eraseIfExists, hfAPIKey, wcdUrl, wcdApiKey } = argv;
+  const {
+    collectionName,
+    eraseIfExists,
+    // hfAPIKey,
+    // wcdUrl,
+    // wcdApiKey
+  } = argv;
 
   // inject the required env variables for the client
-  setEnviromentsFromArgs({ hfAPIKey, wcdUrl, wcdApiKey });
+  // setEnviromentsFromArgs({ hfAPIKey, wcdUrl, wcdApiKey });
 
   if (eraseIfExists) {
     const exists = await collectionExists(collectionName);

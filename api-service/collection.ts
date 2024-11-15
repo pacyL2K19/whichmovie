@@ -1,24 +1,37 @@
 "use server";
 
-import { vectorizer } from "weaviate-client";
+import { generative, vectorizer } from "weaviate-client";
 import { getClient } from ".";
-import { DEFAULT_COLLECTION_NAME, DEFAULT_MODEL, DEFAULT_RETURN_LIMIT, DEFAULT_SOURCE_PROPERTIES, VECTORIZER_NAME } from "@/constants";
+import {
+  DEFAULT_COLLECTION_NAME,
+  DEFAULT_MODEL,
+  DEFAULT_RETURN_LIMIT,
+  DEFAULT_SOURCE_PROPERTIES,
+  VECTORIZER_NAME,
+} from "../constants";
 
 export const createCollection = async (collectionName: string) => {
   try {
     const client = await getClient();
     const movies = await client.collections.create({
       name: collectionName,
-      vectorizers: [
-        vectorizer.text2VecHuggingFace({
-          name: VECTORIZER_NAME,
-          sourceProperties: DEFAULT_SOURCE_PROPERTIES as any,
-          model: DEFAULT_MODEL,
-          waitForModel: true,
-          useCache: true,
-        }),
-      ],
-      // generative: generative.openAI(),
+      // vectorizers: [
+      //   vectorizer.text2VecHuggingFace({
+      //     name: VECTORIZER_NAME,
+      //     sourceProperties: DEFAULT_SOURCE_PROPERTIES as any,
+      //     model: DEFAULT_MODEL,
+      //     waitForModel: true,
+      //     useCache: true,
+      //   }),
+      // ],
+      vectorizers: vectorizer.text2VecOllama({
+        apiEndpoint: 'http://host.docker.internal:11434',
+        model: 'nomic-embed-text',
+      }),
+      generative: generative.ollama({ 
+        apiEndpoint: 'http://host.docker.internal:11434',
+        model: 'llama3.2',
+      }),
       properties: [
         {
           name: "title",
@@ -49,7 +62,7 @@ export const createCollection = async (collectionName: string) => {
 
     console.log(`Collection created: ${movies.name}`);
   } catch (error) {
-    console.error(error);
+    console.error('ERROR >>>>>', error);
   }
 };
 

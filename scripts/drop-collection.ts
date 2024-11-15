@@ -33,8 +33,13 @@ const argv = yargs(hideBin(process.argv))
 async function main() {
   const answer = (await promptUser()) as string;
   if (["yes", "y"].includes(answer.toLowerCase())) {
-    const { hfAPIKey, wcdUrl, wcdApiKey, collectionName } = argv;
-    setEnviromentsFromArgs({ hfAPIKey, wcdUrl, wcdApiKey });
+    const {
+      // hfAPIKey,
+      // wcdUrl,
+      // wcdApiKey,
+      collectionName,
+    } = argv;
+    // setEnviromentsFromArgs({ hfAPIKey, wcdUrl, wcdApiKey });
     deleteCollection(collectionName)
       .then(() => console.log(`Deleted collection: ${collectionName}`))
       .catch((error) => console.error(error));

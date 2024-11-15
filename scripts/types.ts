@@ -11,9 +11,9 @@ export interface EraseCommandLineOptions extends BaseCommandLineOptions {
 }
 
 export interface SecretCommandLineOptions {
-  hfAPIKey: string;
-  wcdUrl: string;
-  wcdApiKey: string;
+  // hfAPIKey: string;
+  // wcdUrl: string;
+  // wcdApiKey: string;
 }
 
 export interface BaseCommandLineOptions extends SecretCommandLineOptions {

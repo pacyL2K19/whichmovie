@@ -12,9 +12,15 @@ const argv = yargs(hideBin(process.argv))
   .parseSync() as SeedCollectionCommandOptions;
 
 async function main() {
-  const { hfAPIKey, wcdUrl, wcdApiKey, collectionName } = argv;
+  const {
+    // hfAPIKey,
+    // wcdUrl,
+    // wcdApiKey,
+    collectionName,
+  } = argv;
   // inject the required env variables for the client
-  setEnviromentsFromArgs({ hfAPIKey, wcdUrl, wcdApiKey });
+  // setEnviromentsFromArgs({ hfAPIKey, wcdUrl, wcdApiKey });
+
   seedCollection(collectionName, movies)
     .then(() => console.log(`Seeded collection: ${collectionName}`))
     .catch((error) => console.error(error));
